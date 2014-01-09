@@ -7,17 +7,18 @@ import re
 
 import logging
 
+
 class SubdomainListFormField(forms.Field):
+    """
+    A form field to accept a string of subdomains, separated by commas
+    If blank or an asterisk '*', allow all subdomains
+    """
 
     def __init__(self, *args, **kwargs):
         kwargs['widget'] = SubdomainTextarea()
         self.logger = logging.getLogger(__name__)
         super(SubdomainListFormField, self).__init__(*args, **kwargs)
 
-    """
-    A form field to accept a string of subdomains, separated by commas
-    If blank or an asterisk '*', allow all subdomains
-    """
     def to_python(self, value):
         """
         return list of subdomains
@@ -55,11 +56,13 @@ class SubdomainListFormField(forms.Field):
                 self.logger.debug('testing %s', test_host)
                 u(test_host)
 
+
 class SubdomainListField(models.TextField):
     __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
-        kwargs['help_text'] = "Comma separated list of subdomains this site supports.  Leave blank to support all subdomains"
+        kwargs['help_text'] = "Comma separated list of subdomains this site supports. " \
+                              "Leave blank to support all subdomains"
         super(SubdomainListField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -70,7 +73,7 @@ class SubdomainListField(models.TextField):
         return value.split(',')
 
     def formfield(self, **kwargs):
-        defaults = {'form_class':SubdomainListFormField}
+        defaults = {'form_class': SubdomainListFormField}
         defaults.update(kwargs)
         return super(SubdomainListField, self).formfield(**defaults)
 
@@ -114,15 +117,17 @@ class FolderNameFormField(forms.CharField):
         except ImportError:
             raise ValidationError('The folder sites/%s/ does not exist or is missing the __init__.py file' % value)
 
+
 class FolderNameField(models.CharField):
     __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
-        kwargs['help_text'] = "Folder name for this site's files.  The name may only consist of lowercase characters, numbers (0-9), and/or underscores"
+        kwargs['help_text'] = "Folder name for this site's files.  The name may only consist of lowercase " \
+                              "characters, numbers (0-9), and/or underscores"
         kwargs['max_length'] = 64
         super(FolderNameField, self).__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
-        defaults = {'form_class':FolderNameFormField}
+        defaults = {'form_class': FolderNameFormField}
         defaults.update(kwargs)
         return super(FolderNameField, self).formfield(**defaults)

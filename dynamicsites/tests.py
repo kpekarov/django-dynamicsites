@@ -7,6 +7,7 @@ from test.config import *
 
 from middleware import DynamicSitesMiddleware
 
+
 class MyTest(TestCase):
     def setUp(self):
         # modify django.conf.settings the way we need

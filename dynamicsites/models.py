@@ -13,8 +13,8 @@ Future ideas include:
 
 # not sure which is better...
 # Site.add_to_class('subdomains', SubdomainListField(blank=True))
-FolderNameField(blank=True).contribute_to_class(Site,'folder_name')
-SubdomainListField(blank=True).contribute_to_class(Site,'subdomains')
+FolderNameField(blank=True).contribute_to_class(Site, 'folder_name')
+SubdomainListField(blank=True).contribute_to_class(Site, 'subdomains')
 
 @property
 def has_subdomains(self):
@@ -26,7 +26,7 @@ def default_subdomain(self):
     Return the first subdomain in self.subdomains or '' if no subdomains defined
     """
     if len(self.subdomains):
-        if self.subdomains[0]=="''":
+        if self.subdomains[0] == "''":
             return ''
         return self.subdomains[0]
     return ''

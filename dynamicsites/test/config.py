@@ -87,13 +87,14 @@ site_identification_tests = {
     'http://gfeebleminded.dining.aboutfood.com/':'about-food.com',
 }
 
+
 class MockRequest(object):
     def __init__(self, host):
         self.host = host
 
     def get_host(self):
         return self.host
-        
+
     META = {'SERVER_PORT':'80'}
 
 hostname_and_port_tests = {
