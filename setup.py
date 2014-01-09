@@ -2,9 +2,10 @@ from distutils.core import setup
 
 setup(
     version='0.1',
-    name='dynamicsites',
+    name='django_dynamicsites',
     description="Host multiple sites from a single django project",
-    url='https://bitbucket.org/uysrc/django-dynamicsites',
+    url='https://github.com/kpekarov/django-dynamicsites',
     platforms=['any'],
-    packages=['dynamicsites'],
+    package_dir={'django_dynamicsites': "dynamicsites"},
+    packages=['django_dynamicsites'],
 )
