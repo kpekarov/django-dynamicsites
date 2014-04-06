@@ -188,6 +188,10 @@ class DynamicSitesMiddleware(object):
             SITE_ID.value = site_id
             try:
                 self.site = Site.objects.get(id=site_id)
+
+                # In case when getting site_id from cache, set subdomain because it is missed
+                # it works in case when subdomains are not set in db
+                self.subdomain, self.domain = self.domain.split('.', 1)
             except Site.DoesNotExist:
                 # This might happen if the Site object was deleted from the
                 # database after it was cached.  Remove from cache and act
