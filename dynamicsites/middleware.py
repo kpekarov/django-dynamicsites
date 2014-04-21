@@ -24,6 +24,7 @@ class DynamicSitesMiddleware(object):
         self.logger = logging.getLogger(__name__)
         self.HOSTNAME_REDIRECTS = getattr(settings, "HOSTNAME_REDIRECTS", None)
         self.ENV_HOSTNAMES = getattr(settings, "ENV_HOSTNAMES", None)
+        self.NO_CACHE = getattr(settings, "DYNAMICSITES_NO_CACHE", None)
         self.request = request
         self.site = None
         self.domain, self.port = self.get_domain_and_port()
@@ -155,7 +156,9 @@ class DynamicSitesMiddleware(object):
 
         Otherwise, returns False.
         """
-        Site.objects.clear_cache()
+        if self.NO_CACHE is not True:
+            Site.objects.clear_cache()
+
         domain = self.domain
         self.logger.debug('ENV_HOSTNAMES lookup subdomain=%s domain=%s domain_unsplit=%s',
                           self.subdomain, domain, self.domain_unsplit)
@@ -181,8 +184,11 @@ class DynamicSitesMiddleware(object):
             return self.redirect(self.HOSTNAME_REDIRECTS[self.domain_unsplit])
 
         # check cache
-        cache_key = 'site_id:%s' % self.domain_unsplit
-        site_id = cache.get(cache_key)
+        site_id = None
+        if self.NO_CACHE is not True:
+            cache_key = 'site_id:%s' % self.domain_unsplit
+            site_id = cache.get(cache_key)
+
         if site_id:
             self.logger.debug('Found site_id=%s from cache.get(\'%s\')', site_id, cache_key)
             SITE_ID.value = site_id
@@ -196,7 +202,9 @@ class DynamicSitesMiddleware(object):
                 # This might happen if the Site object was deleted from the
                 # database after it was cached.  Remove from cache and act
                 # as if the cache lookup failed.
-                cache.delete(cache_key)
+
+                if self.NO_CACHE is not True:
+                    cache.delete(cache_key)
             else:
                 return None
 
@@ -210,7 +218,10 @@ class DynamicSitesMiddleware(object):
             return False
 
         SITE_ID.value = self.site.pk
-        cache.set(cache_key, SITE_ID.value, 5*60)
+
+        if self.NO_CACHE is not True:
+            cache.set(cache_key, SITE_ID.value, 5*60)
+
         return None
 
     def _redirect(self, new_host, subdomain=None):
